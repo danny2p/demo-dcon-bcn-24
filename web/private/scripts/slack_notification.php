@@ -82,7 +82,7 @@ switch($_POST['wf_type']) {
       $text .= "\nHey senior devs - <@U02A35B9PD1> <@U0234QXN69G>  - Please Review! \n";
     } elseif (strpos($_ENV['PANTHEON_ENVIRONMENT'], 'd-') === 0 || $_ENV['PANTHEON_ENVIRONMENT'] == 'qs') {
       $text = "------------- :building_construction: Commit to Design Branch :building_construction: ------------- \n";
-      $text .= "\nHey design team - <@U02A35B9PD1> <@UHC0VMZNJ> - Please review new theme work! \n";
+      $text .= "\nHey design team - @here <!here> @U02A35B9PD1 <!@U02A35B9PD1> <@UHC0VMZNJ> - Please review new theme work! \n";
     } else {
       $text = "------------- :building_construction: Commit to " . $_ENV['PANTHEON_ENVIRONMENT'] . " Multidev :building_construction: ------------- \n";
     }
