@@ -113,7 +113,9 @@ _slack_notification($secrets['slack_url'], $secrets['slack_channel'], $secrets['
  */
 function _slack_notification($slack_url, $channel, $username, $text)
 {
-  $payload = json_encode($text);
+  $payload = json_encode([
+    'text' => $text
+  ]);
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $slack_url);
   curl_setopt($ch, CURLOPT_POST, 1);
