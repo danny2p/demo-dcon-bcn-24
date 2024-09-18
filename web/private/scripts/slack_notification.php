@@ -26,7 +26,7 @@ $secrets = array (
 $fields = array(
   array( // Render Environment name with link to site, <http://{ENV}-{SITENAME}.pantheon.io|{ENV}>
     'title' => 'Site',
-    'value' => $_ENV['PANTHEON_SITE_NAME'] . '(' . $_ENV['PANTHEON_ENVIRONMENT'] . ')' . 'http://' . $_ENV['PANTHEON_ENVIRONMENT'] . '-' . $_ENV['PANTHEON_SITE_NAME'] . '.pantheonsite.io',
+    'value' => $_ENV['PANTHEON_SITE_NAME'] . ' (' . $_ENV['PANTHEON_ENVIRONMENT'] . ') - ' . 'http://' . $_ENV['PANTHEON_ENVIRONMENT'] . '-' . $_ENV['PANTHEON_SITE_NAME'] . '.pantheonsite.io',
     'short' => 'true'
   ),
   array( // Render Name with link to Email from Commit message
@@ -79,10 +79,10 @@ switch($_POST['wf_type']) {
     // https://api.slack.com/incoming-webhooks
     $text = "------------- :building_construction: Commit to Dev :building_construction: ------------- \n";
     if ($_ENV['PANTHEON_ENVIRONMENT'] == "dev") { //indicating a branch with design / theme work
-      $text .= "\nHey senior devs - <@danny.pfeiffer> <@katie.walters>  - Please Review! \n";
+      $text .= "\nHey senior devs - <@U02A35B9PD1> <@U0234QXN69G>  - Please Review! \n";
     } elseif (strpos($_ENV['PANTHEON_ENVIRONMENT'], 'd-') === 0 || $_ENV['PANTHEON_ENVIRONMENT'] == 'qs') {
       $text = "------------- :building_construction: Commit to Design Branch :building_construction: ------------- \n";
-      $text .= "\nHey design team - <@danny.pfeiffer> <@steve.bresnick> - review neme theme work! \n";
+      $text .= "\nHey design team - <@U02A35B9PD1> <@UHC0VMZNJ> - Please review new theme work! \n";
     } else {
       $text = "------------- :building_construction: Commit to " . $_ENV['PANTHEON_ENVIRONMENT'] . " Multidev :building_construction: ------------- \n";
     }
