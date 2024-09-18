@@ -26,7 +26,7 @@ $secrets = array (
 $fields = array(
   array( // Render Environment name with link to site, <http://{ENV}-{SITENAME}.pantheon.io|{ENV}>
     'title' => 'Site',
-    'value' => '<http://' . $_ENV['PANTHEON_ENVIRONMENT'] . '-' . $_ENV['PANTHEON_SITE_NAME'] . '.pantheonsite.io|' . $_ENV['PANTHEON_SITE_NAME'] . '(' . $_ENV['PANTHEON_ENVIRONMENT'] . ')>',
+    'value' => $_ENV['PANTHEON_SITE_NAME'] . '(' . $_ENV['PANTHEON_ENVIRONMENT'] . ')' . 'http://' . $_ENV['PANTHEON_ENVIRONMENT'] . '-' . $_ENV['PANTHEON_SITE_NAME'] . '.pantheonsite.io',
     'short' => 'true'
   ),
   array( // Render Name with link to Email from Commit message
@@ -59,9 +59,9 @@ switch($_POST['wf_type']) {
 
     // Prepare the slack payload as per:
     // https://api.slack.com/incoming-webhooks
-    $text = '------------- :lightningbolt-vfx: ' . ucwords($_ENV['PANTHEON_ENVIRONMENT']) . 'Deployment :lightningbolt-vfx: ------------- \n';
+    $text = "------------- :lightningbolt-vfx: " . ucwords($_ENV['PANTHEON_ENVIRONMENT']) . "Deployment :lightningbolt-vfx: ------------- \n";
     if ($_ENV['PANTHEON_ENVIRONMENT'] == "test") { 
-      $text .= '\n Hey QA Team - @test-qa-team  - Please Review! \n\n';
+      $text .= "\n Hey QA Team - @test-qa-team  - Please Review! \n\n";
     } 
 
     $text .= $workflow_info;
@@ -77,17 +77,18 @@ switch($_POST['wf_type']) {
     $hash = `git log -1 --pretty=%h`;
     // Prepare the slack payload as per:
     // https://api.slack.com/incoming-webhooks
-    $text = '------------- :building_construction: Commit to Dev :building_construction: ------------- \n';
+    $text = "------------- :building_construction: Commit to Dev :building_construction: ------------- \n";
     if ($_ENV['PANTHEON_ENVIRONMENT'] == "dev") { //indicating a branch with design / theme work
-      $text .= '\n Hey senior devs - @danny.pfeiffer @katie.walters  - Please Review! \n';
+      $text .= "\n Hey senior devs - @danny.pfeiffer @katie.walters  - Please Review! \n";
     } elseif (strpos($_ENV['PANTHEON_ENVIRONMENT'], 'd-') === 0 || $_ENV['PANTHEON_ENVIRONMENT'] == 'qs') {
-      $text = '------------- :building_construction: Commit to Design Branch :building_construction: ------------- \n';
-      $text .= '\n Hey design team - @danny.pfeiffer @steve.bresnick - review neme theme work! \n';
+      $text = "------------- :building_construction: Commit to Design Branch :building_construction: ------------- \n";
+      $text .= "\n Hey design team - @danny.pfeiffer @steve.bresnick - review neme theme work! \n";
     } else {
-      $text = '------------- :building_construction: Commit to ' . $_ENV['PANTHEON_ENVIRONMENT'] . ' Multidev :building_construction: ------------- \n';
+      $text = "------------- :building_construction: Commit to " . $_ENV['PANTHEON_ENVIRONMENT'] . " Multidev :building_construction: ------------- \n";
     }
 
     $text .= $workflow_info;
+    $text .= "Commit Log: " . rtrim($message);
     
     
     /*
