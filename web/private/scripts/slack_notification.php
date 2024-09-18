@@ -18,8 +18,13 @@ $secrets = array (
   'slack_url' => pantheon_get_secret('slack_url'),
   'slack_channel' => pantheon_get_secret('slack_channel'),
   'slack_username' => pantheon_get_secret('slack_username'),
-  'always_show_text' => true
+  'slack_status' => pantheon_get_secret('slack_status'),
 );
+
+if ($secrets['slack_status'] == "disabled") {
+  exit;
+}
+
 // Build an array of fields to be rendered with Slack Attachments as a table
 // attachment-style formatting:
 // https://api.slack.com/docs/attachments
@@ -51,6 +56,8 @@ foreach ($fields as $field) {
 
 // Customize the message based on the workflow type.  Note that slack_notification.php
 // must appear in your pantheon.yml for each workflow type you wish to send notifications on.
+print "Workflow Type: " . $_POST['wf_type'] . "\n";
+
 switch($_POST['wf_type']) {
   case 'deploy':
     // Find out what tag we are on and get the annotation.
@@ -78,9 +85,9 @@ switch($_POST['wf_type']) {
     // Prepare the slack payload as per:
     // https://api.slack.com/incoming-webhooks
     $text = "------------- :building_construction: Commit to Dev :building_construction: ------------- \n";
-    if ($_ENV['PANTHEON_ENVIRONMENT'] == "dev") { //indicating a branch with design / theme work
+    if ($_ENV['PANTHEON_ENVIRONMENT'] == "dev") { 
       $text .= "\n:eyes: Hey senior devs Please Review!  \n";
-    } elseif (strpos($_ENV['PANTHEON_ENVIRONMENT'], 'd-') === 0 || $_ENV['PANTHEON_ENVIRONMENT'] == 'qs') {
+    } elseif (strpos($_ENV['PANTHEON_ENVIRONMENT'], 'd-') === 0 || $_ENV['PANTHEON_ENVIRONMENT'] == 'qs') { //indicating a branch with design / theme work
       $text = "------------- :building_construction: Commit to Design Branch :building_construction: ------------- \n";
       $text .= "\n:eyes: Hey design team Please review new theme work! \n";
     } else {
