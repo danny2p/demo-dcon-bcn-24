@@ -63,9 +63,9 @@ switch($_POST['wf_type']) {
 
     // Prepare the slack payload as per:
     // https://api.slack.com/incoming-webhooks
-    $text = "------------- :lightningbolt-vfx: " . ucwords($_ENV['PANTHEON_ENVIRONMENT']) . "Deployment :lightningbolt-vfx: ------------- \n";
+    $text = "------------- :lightningbolt-vfx: " . ucwords($_ENV['PANTHEON_ENVIRONMENT']) . " Deployment :lightningbolt-vfx: ------------- \n";
     if ($_ENV['PANTHEON_ENVIRONMENT'] == "test") { 
-      $text .= "\nHey QA Team - <@test-qa-team>  - Please Review! \n\n";
+      $text .= "\nHey QA Team - Please Review! \n\n";
     } 
 
     $text .= $workflow_info;
