@@ -90,7 +90,6 @@ switch($_POST['wf_type']) {
     $email = `git log -1 --pretty=%ce`;
     $message = `git log -1 --pretty=%B`;
     $hash = `git log -1 --pretty=%h`;
-https://slack.com/shortcuts/Ft078VS8HZ6X/e8785cc9320ea403461e8d26239c16ff
     // Prepare the slack payload as per:
     // https://api.slack.com/incoming-webhooks
     $text = '------------- Commit to Dev ------------- \n';
