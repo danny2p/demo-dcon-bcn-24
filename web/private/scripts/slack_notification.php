@@ -74,6 +74,7 @@ switch($_POST['wf_type']) {
 
   case 'sync_code':
   case 'sync_code_with_build':
+  case 'merge_cloud_development_environment_into_dev':
     // Get the committer, hash, and message for the most recent commit.
     $committer = `git log -1 --pretty=%cn`;
     $email = `git log -1 --pretty=%ce`;
