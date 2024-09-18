@@ -21,9 +21,6 @@ $secrets = array (
   'slack_status' => pantheon_get_secret('slack_status'),
 );
 
-if ($secrets['slack_status'] == "disabled") {
-  exit;
-}
 
 // Build an array of fields to be rendered with Slack Attachments as a table
 // attachment-style formatting:
@@ -97,6 +94,8 @@ switch($_POST['wf_type']) {
     $text .= $workflow_info;
     $text .= "Commit Log: " . rtrim($message);
     
+    print $text;
+
     
     /*
     $text .= 'Code sync to the ' . $_ENV['PANTHEON_ENVIRONMENT'] . ' environment of ' . $_ENV['PANTHEON_SITE_NAME'] . ' by ' . $_POST['user_email'] . "!\n";
@@ -114,7 +113,10 @@ switch($_POST['wf_type']) {
     break;
 }
 
-_slack_notification($secrets['slack_url'], $secrets['slack_channel'], $secrets['slack_username'], $text);
+if ($secrets['slack_status'] != "disabled") {
+  _slack_notification($secrets['slack_url'], $secrets['slack_channel'], $secrets['slack_username'], $text);
+}
+
 
 
 /**
