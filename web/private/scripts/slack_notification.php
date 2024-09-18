@@ -80,19 +80,24 @@ switch($_POST['wf_type']) {
     $hash = `git log -1 --pretty=%h`;
     // Prepare the slack payload as per:
     // https://api.slack.com/incoming-webhooks
-    
+    $text = '------------- :building_construction: Commit to Dev :building_construction: ------------- \n';
     if ($_ENV['PANTHEON_ENVIRONMENT'] == "dev") { //indicating a branch with design / theme work
-      $text = '------------- :building_construction: Commit to Dev :building_construction: ------------- \n';
       $text .= '\n Hey senior devs - @danny.pfeiffer @katie.walters  - Please Review! \n';
-    } elseif (strpos($_ENV['PANTHEON_ENVIRONMENT'], 'd-') === 0) {
+    } elseif (strpos($_ENV['PANTHEON_ENVIRONMENT'], 'd-') === 0 || $_ENV['PANTHEON_ENVIRONMENT'] == 'qs') {
       $text = '------------- :building_construction: Commit to Design Branch :building_construction: ------------- \n';
-      $text .= '\n Hey design team - @steve.bresnick - review neme theme work! \n';
+      $text .= '\n Hey design team - @danny.pfeiffer @steve.bresnick - review neme theme work! \n';
+    } else {
+      $text = '------------- :building_construction: Commit to ' . $_ENV['PANTHEON_ENVIRONMENT'] . ' Multidev :building_construction: ------------- \n';
     }
 
+    $text .= $workflow_info;
+    
+    
+    /*
     $text .= 'Code sync to the ' . $_ENV['PANTHEON_ENVIRONMENT'] . ' environment of ' . $_ENV['PANTHEON_SITE_NAME'] . ' by ' . $_POST['user_email'] . "!\n";
     $text .= 'Most recent commit: ' . rtrim($hash) . ' by ' . rtrim($committer) . ': ' . $message;
-
     $text .= rtrim($message);
+    */
     break;
 
   case 'clear_cache':
