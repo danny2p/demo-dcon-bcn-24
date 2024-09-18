@@ -61,7 +61,7 @@ switch($_POST['wf_type']) {
     // https://api.slack.com/incoming-webhooks
     $text = "------------- :lightningbolt-vfx: " . ucwords($_ENV['PANTHEON_ENVIRONMENT']) . "Deployment :lightningbolt-vfx: ------------- \n";
     if ($_ENV['PANTHEON_ENVIRONMENT'] == "test") { 
-      $text .= "\n Hey QA Team - @test-qa-team  - Please Review! \n\n";
+      $text .= "\nHey QA Team - <@test-qa-team>  - Please Review! \n\n";
     } 
 
     $text .= $workflow_info;
@@ -79,10 +79,10 @@ switch($_POST['wf_type']) {
     // https://api.slack.com/incoming-webhooks
     $text = "------------- :building_construction: Commit to Dev :building_construction: ------------- \n";
     if ($_ENV['PANTHEON_ENVIRONMENT'] == "dev") { //indicating a branch with design / theme work
-      $text .= "\n Hey senior devs - @danny.pfeiffer @katie.walters  - Please Review! \n";
+      $text .= "\nHey senior devs - <@danny.pfeiffer> <@katie.walters>  - Please Review! \n";
     } elseif (strpos($_ENV['PANTHEON_ENVIRONMENT'], 'd-') === 0 || $_ENV['PANTHEON_ENVIRONMENT'] == 'qs') {
       $text = "------------- :building_construction: Commit to Design Branch :building_construction: ------------- \n";
-      $text .= "\n Hey design team - @danny.pfeiffer @steve.bresnick - review neme theme work! \n";
+      $text .= "\nHey design team - <@danny.pfeiffer> <@steve.bresnick> - review neme theme work! \n";
     } else {
       $text = "------------- :building_construction: Commit to " . $_ENV['PANTHEON_ENVIRONMENT'] . " Multidev :building_construction: ------------- \n";
     }
