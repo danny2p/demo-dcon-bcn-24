@@ -1,0 +1,6 @@
+name: dcon-bcn-2024
+recipe: pantheon
+config:
+  framework: drupal8
+  site: dcon-bcn-2024
+  id: 84c4e90b-f037-48ed-8d5d-1e7753a904c3
