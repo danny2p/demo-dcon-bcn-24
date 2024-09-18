@@ -6,31 +6,23 @@ if (extension_loaded('newrelic')) {
   newrelic_ignore_transaction();
 }
 
-// Fetch metadata from Pantheon's internal API.
-$req = pantheon_curl('https://api.live.getpantheon.com/sites/self/bindings?type=newrelic', null, 8443);
-$meta = json_decode($req['body'], true);
+define("API_KEY_SECRET_NAME", "new_relic_api_key");
 
-// Get the right binding for the current ENV.
-// It should be possible to just fetch the one for the current env.
-$nr = false;
-foreach($meta as $data) {
-  if ($data['environment'] === PANTHEON_ENVIRONMENT) {
-    $nr = $data;
-    break;
-  }
-}
+$data = get_nr_connection_info();
 // Fail fast if we're not going to be able to call New Relic.
-if ($nr == false) {
+if ($data == false) {
   echo "\n\nALERT! No New Relic metadata could be found.\n\n";
   exit();
 }
+
+$app_id = get_app_id($data['api_key'], $data['app_name']);
 
 // This is one example that handles code pushes, dashboard 
 // commits, and deploys between environments. To make sure we 
 // have good deploy markers, we gather data differently depending
 // on the context.
 
-if ($_POST['wf_type'] == 'sync_code') {
+if (in_array($_POST['wf_type'], ['sync_code','sync_code_with_build'])) {  
   // commit 'subject'
   $description = trim(`git log --pretty=format:"%s" -1`);
   $revision = trim(`git log --pretty=format:"%h" -1`);
@@ -56,20 +48,73 @@ elseif ($_POST['wf_type'] == 'deploy') {
   $user = $_POST['user_email'];
 }
 
+// clean up the git output
+$revision = rtrim($revision, "\n");
+$changelog = rtrim($changelog, "\n");
+$changelog = str_replace('\'','',$changelog);
 
-// Use New Relic's v1 curl command-line example.
-// TODO: update to use v2 API with JSON, plus curl() in PHP.
-// Blocked by needing the app_id to use v2 API
-$curl = 'curl -H "x-api-key:'. $data['api_key'] .'"';
-$curl .= ' -d "deployment[application_id]=' . $data['app_name'] .'"';
-$curl .= ' -d "deployment[description]= '. $description .'"';
-$curl .= ' -d "deployment[revision]='. $revision .'"';
-$curl .= ' -d "deployment[changelog]='. $changelog .'"';
-$curl .= ' -d "deployment[user]='. $user .'"';
-$curl .= ' https://api.newrelic.com/deployments.xml';
-// The below can be helpful debugging.
-// echo "\n\nCURLing... \n\n$curl\n\n";
+$deployment_data = [
+  "deployment" => [
+    "revision" => $revision,
+    "changelog" => $changelog,
+    "description" => $description,
+    "user" => $user,
+  ]
+];
 
-echo "Logging deployment in New Relic...\n";
-passthru($curl);
-echo "Done!";
+echo "Logging deployment in New Relic App $app_id...\n";
+
+$json_data = json_encode($deployment_data, JSON_FORCE_OBJECT);
+echo "Sending: $json_data\n";
+
+$command = "curl -X POST 'https://api.newrelic.com/v2/applications/$app_id/deployments.json' " .
+           "-H 'X-Api-Key: {$data['api_key']}' " .
+           "-H 'Content-Type: application/json' " .
+           "-H 'Accept: application/json' " .
+           "-d '" . $json_data . "'";
+
+echo "Running: $command\n";
+
+passthru($command);
+
+echo "\nDone!\n";
+
+/**
+ * Gets the New Relic API Key so that further requests can be made.
+ *
+ * Also gets New Relic's name for the given environment.
+ */
+function get_nr_connection_info() {
+  $output = array();
+
+  $output['app_name'] = ini_get('newrelic.appname');
+  if (function_exists('pantheon_get_secret')) {
+    $output['api_key'] = pantheon_get_secret(API_KEY_SECRET_NAME);
+  }
+
+  return $output;
+}
+
+/**
+ * Get the id of the current multidev environment.
+ */
+function get_app_id( $api_key, $app_name ) {
+  $return = '';
+  $s      = curl_init();
+  curl_setopt( $s, CURLOPT_URL, 'https://api.newrelic.com/v2/applications.json' );
+  curl_setopt( $s, CURLOPT_HTTPHEADER, array( 'X-API-KEY:' . $api_key ) );
+  curl_setopt( $s, CURLOPT_RETURNTRANSFER, 1 );
+  $result = curl_exec( $s );
+  curl_close( $s );
+
+  $result = json_decode( $result, true );
+
+  foreach ( $result['applications'] as $application ) {
+    if ( $application['name'] === $app_name ) {
+      $return = $application['id'];
+      break;
+    }
+  }
+
+  return $return;
+}
