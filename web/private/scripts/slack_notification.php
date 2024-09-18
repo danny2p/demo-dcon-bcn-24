@@ -17,7 +17,7 @@ $defaults = array(
 $secrets = array (
   'slack_url' => pantheon_get_secret('slack_url'),
   'slack_channel' => pantheon_get_secret('slack_channel'),
-  'slack_user' => pantheon_get_secret('slack_channel'),
+  'slack_username' => pantheon_get_secret('slack_username'),
   'always_show_text' => true
 );
 // Build an array of fields to be rendered with Slack Attachments as a table
