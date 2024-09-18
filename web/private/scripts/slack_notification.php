@@ -34,11 +34,6 @@ $fields = array(
     'value' => $_POST['user_email'],
     'short' => 'true'
   ),
-  array( // Render Name with link to Email from Commit message
-    'title' => 'Deploy Message',
-    'value' => $_POST['deploy_message'],
-    'short' => 'true'
-  ),
   array( // Render workflow phase that the message was sent
     'title' => 'Triggering Workflow',
     'value' => ucfirst($_POST['stage']) . ' ' . str_replace('_', ' ',  $_POST['wf_type']),
@@ -70,6 +65,7 @@ switch($_POST['wf_type']) {
     } 
 
     $text .= $workflow_info;
+    $text .= "Deploy Log: $deploy_message \n";
     break;
 
   case 'sync_code':
