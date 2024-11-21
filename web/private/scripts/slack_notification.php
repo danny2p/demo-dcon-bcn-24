@@ -16,8 +16,6 @@ $defaults = array(
 // https://github.com/pantheon-systems/terminus-secrets-manager-plugin
 $secrets = array (
   'slack_url' => pantheon_get_secret('slack_url'),
-  'slack_channel' => pantheon_get_secret('slack_channel'),
-  'slack_username' => pantheon_get_secret('slack_username'),
   'slack_status' => pantheon_get_secret('slack_status'),
 );
 
@@ -115,7 +113,7 @@ switch($_POST['wf_type']) {
 }
 
 if ($secrets['slack_status'] != "disabled") {
-  _slack_notification($secrets['slack_url'], $secrets['slack_channel'], $secrets['slack_username'], $text);
+  _slack_notification($secrets['slack_url'],$text);
 }
 
 
@@ -123,7 +121,7 @@ if ($secrets['slack_status'] != "disabled") {
 /**
  * Send a notification to slack
  */
-function _slack_notification($slack_url, $channel, $username, $text)
+function _slack_notification($slack_url,$text)
 {
   $payload = json_encode([
     'text' => $text
